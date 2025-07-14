@@ -21,11 +21,26 @@ async def update_price_nickname():
     await client.wait_until_ready()
     while not client.is_closed():
         try:
-            url = f"https://public-api.birdeye.so/public/price?address={TOKEN_ADDRESS}"
-            headers = {"x-api-key": BIRDEYE_API_KEY}
+            url = f"https://public-api.birdeye.so/defi/price?address={TOKEN_ADDRESS}&ui_amount_mode=raw"
+            headers = {
+                "accept": "application/json",
+                "x-chain": "solana",
+                "X-API-KEY": BIRDEYE_API_KEY
+            }
+
             response = requests.get(url, headers=headers)
+
+            # 🔍 Log the status code and response body
+            logging.info(f"Birdeye response: {response.status_code} - {response.text}")
+
             data = response.json()
-            price = data['data']['value']
+
+            price = data.get('data', {}).get('value')
+            if price is None:
+                logging.error(f"Price not found in API response: {data}")
+                await asyncio.sleep(UPDATE_INTERVAL)
+                continue
+
             formatted_price = f"${price:.6f}"
             logging.info(f"Fetched price: {formatted_price}")
             guild = discord.utils.get(client.guilds, id=GUILD_ID)
