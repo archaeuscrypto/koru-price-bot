@@ -45,7 +45,7 @@ async def update_price_nickname():
             formatted_price = f"${price:.6f}"
 
             # Get 24h change from the same API response
-            change_24h = data.get('data', {}).get('change_24h', None)
+            change_24h = data.get('data', {}).get('priceChange24h')
             if change_24h is not None:
                 change_str = f"{change_24h:+.2f}%"
                 arrow = "📈" if change_24h > 0 else "📉"
