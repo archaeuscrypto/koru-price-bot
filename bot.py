@@ -49,7 +49,7 @@ async def update_price_nickname():
             if change_24h is not None:
                 change_str = f"{change_24h:+.2f}%"
                 arrow = "📈" if change_24h > 0 else "📉"
-                activity = discord.Activity(type=discord.ActivityType.watching, name=f"{arrow} 24h: {change_str}")
+                activity = discord.Activity(type=discord.ActivityType.watching, name=f"24h: {change_str} {arrow}")
                 await client.change_presence(activity=activity)
                 logging.info(f"Updated presence: Watching 24h: {change_str}")
             else:
