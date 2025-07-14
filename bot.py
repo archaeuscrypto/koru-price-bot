@@ -74,6 +74,7 @@ async def update_price_nickname():
 @client.event
 async def on_ready():
     logging.info(f"Logged in as {client.user}")
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name="Starting..."))
     client.loop.create_task(update_price_nickname())
 
 def main():
