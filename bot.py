@@ -14,6 +14,7 @@ UPDATE_INTERVAL = 10  # seconds
 intents = discord.Intents.default()
 intents.guilds = True
 intents.members = True
+intents.presences = True
 
 client = discord.Client(intents=intents)
 
