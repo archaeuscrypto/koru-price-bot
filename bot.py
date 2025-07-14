@@ -8,7 +8,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 BIRDEYE_API_KEY = os.getenv("BIRDEYE_API_KEY")
 GUILD_ID = int(os.getenv("GUILD_ID") or '1392171241586298880')
 TOKEN_ADDRESS = 'D1mM9THeoBEa2xBbRHpinBPc9x6rDeKUYzMvcUDzpump'
-UPDATE_INTERVAL = 10  # seconds
+UPDATE_INTERVAL = 15  # seconds
 
 
 intents = discord.Intents.default()
@@ -67,6 +67,19 @@ async def update_price_nickname():
                 continue
             await member.edit(nick=formatted_price)
             logging.info("Nickname updated.")
+            role_name = "PriceBotColor"  # Name of the role you want to recolor
+
+            role = discord.utils.get(guild.roles, name=role_name)
+            if role:
+                if change_24h > 0:
+                    await role.edit(color=discord.Color.green())
+                    logging.info("Set role color to green 📈")
+                else:
+                    await role.edit(color=discord.Color.red())
+                    logging.info("Set role color to red 📉")
+            else:
+                logging.warning(f"Role '{role_name}' not found in guild.")
+
         except Exception as e:
             logging.error(f"Error updating nickname: {e}")
         await asyncio.sleep(UPDATE_INTERVAL)
