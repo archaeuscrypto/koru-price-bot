@@ -42,7 +42,18 @@ async def update_price_nickname():
                 continue
 
             formatted_price = f"${price:.6f}"
-            logging.info(f"Fetched price: {formatted_price}")
+
+            # Get 24h change from the same API response
+            change_24h = data.get('data', {}).get('change_24h', None)
+            if change_24h is not None:
+                change_str = f"{change_24h:+.2f}%"
+                arrow = "📈" if change_24h > 0 else "📉"
+                activity = discord.Activity(type=discord.ActivityType.watching, name=f"{arrow} 24h: {change_str}")
+                await client.change_presence(activity=activity)
+                logging.info(f"Updated presence: Watching 24h: {change_str}")
+            else:
+                logging.warning("24h change not found in API response.")
+
             guild = discord.utils.get(client.guilds, id=GUILD_ID)
             if guild is None:
                 logging.error("Guild not found. Check GUILD_ID.")
