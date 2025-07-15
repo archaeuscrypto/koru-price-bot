@@ -6,9 +6,8 @@ import os
 import json
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
-BIRDEYE_API_KEY = os.getenv("BIRDEYE_API_KEY")
 GUILD_IDS = json.loads(os.getenv("GUILD_IDS_JSON", "[]"))
-TOKEN_ADDRESS = 'D1mM9THeoBEa2xBbRHpinBPc9x6rDeKUYzMvcUDzpump'
+COINGECKO_ID = "koru"
 UPDATE_INTERVAL = 60  # seconds
 
 intents = discord.Intents.default()
@@ -22,25 +21,26 @@ async def update_price_nickname():
     await client.wait_until_ready()
     while not client.is_closed():
         try:
-            url = f"https://public-api.birdeye.so/defi/price?address={TOKEN_ADDRESS}&ui_amount_mode=raw"
-            headers = {
-                "accept": "application/json",
-                "x-chain": "solana",
-                "X-API-KEY": BIRDEYE_API_KEY
-            }
-
-            response = requests.get(url, headers=headers)
-            logging.info(f"Birdeye response: {response.status_code} - {response.text}")
+            url = f"https://api.coingecko.com/api/v3/simple/price?ids={COINGECKO_ID}&vs_currencies=usd&include_24hr_change=true"
+            response = requests.get(url)
+            logging.info(f"CoinGecko response: {response.status_code} - {response.text}")
 
             data = response.json()
-            price = data.get('data', {}).get('value')
+            token_data = data.get(COINGECKO_ID)
+            if not token_data:
+                logging.error(f"Koru token data not found in response: {data}")
+                await asyncio.sleep(UPDATE_INTERVAL)
+                continue
+
+            price = token_data.get("usd")
+            change_24h = token_data.get("usd_24h_change")
+
             if price is None:
-                logging.error(f"Price not found in API response: {data}")
+                logging.error("Price missing from CoinGecko response.")
                 await asyncio.sleep(UPDATE_INTERVAL)
                 continue
 
             formatted_price = f"${price:.6f}"
-            change_24h = data.get('data', {}).get('priceChange24h')
 
             if change_24h is not None:
                 change_str = f"{change_24h:+.2f}%"
