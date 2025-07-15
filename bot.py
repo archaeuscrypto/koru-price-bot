@@ -9,7 +9,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 BIRDEYE_API_KEY = os.getenv("BIRDEYE_API_KEY")
 GUILD_IDS = json.loads(os.getenv("GUILD_IDS_JSON", "[]"))
 TOKEN_ADDRESS = 'D1mM9THeoBEa2xBbRHpinBPc9x6rDeKUYzMvcUDzpump'
-UPDATE_INTERVAL = 15  # seconds
+UPDATE_INTERVAL = 60  # seconds
 
 intents = discord.Intents.default()
 intents.guilds = True
